@@ -1,4 +1,5 @@
 ultralytics
+scikit-image
 torchkeras
 pathlib
 torch
