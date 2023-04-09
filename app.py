@@ -1,7 +1,6 @@
 import gradio as gr 
 import pandas as pd 
 
-from skimage import data
 from PIL import Image
 from torchkeras import plots 
 from torchkeras.data import get_url_img
@@ -13,10 +12,6 @@ from ultralytics.yolo.data import utils
 
 model = YOLO('yolov8n.pt')
 
-#prepare example images
-Image.fromarray(data.coffee()).save('coffee.jpeg') 
-Image.fromarray(data.astronaut()).save('people.jpeg')
-Image.fromarray(data.cat()).save('cat.jpeg')
 
 #load class_names
 yaml_path = str(Path(ultralytics.__file__).parent/'datasets/coco128.yaml') 
@@ -34,19 +29,16 @@ def detect(img):
     return vis
 
 with gr.Blocks() as demo:
-    gr.Markdown("# yolov8目标检测演示")
-    
-    with gr.Tab("选择测试图片"):
-        files = ['people.jpeg','coffee.jpeg','cat.jpeg']
-        drop_down = gr.Dropdown(choices=files,value=files[0])
+
+    with gr.Tab("捕捉摄像头喔"):
+        input_img = gr.Image(source='webcam',type='pil')
         button = gr.Button("执行检测",variant="primary")
-        
         
         gr.Markdown("## 预测输出")
         out_img = gr.Image(type='pil')
         
         button.click(detect,
-                     inputs=drop_down, 
+                     inputs=input_img, 
                      outputs=out_img)
         
     with gr.Tab("输入图片链接"):
@@ -72,16 +64,7 @@ with gr.Blocks() as demo:
                      inputs=input_img, 
                      outputs=out_img)
         
-    with gr.Tab("捕捉摄像头喔"):
-        input_img = gr.Image(source='webcam',type='pil')
-        button = gr.Button("执行检测",variant="primary")
-        
-        gr.Markdown("## 预测输出")
-        out_img = gr.Image(type='pil')
-        
-        button.click(detect,
-                     inputs=input_img, 
-                     outputs=out_img)
+
         
 gr.close_all() 
 demo.queue()
